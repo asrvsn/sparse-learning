@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import torch
 import numpy as np
+import seaborn as sns
 
 def plot_df(df):
     '''
@@ -19,20 +20,21 @@ def layer_parameters(layer):
     return torch.cat([x.view(-1) for x in layer.parameters()]) 
 
 def plot_layers(model): 
-	with torch.no_grad():
-		fc1 = layer_parameters(model.fc1).cpu().numpy()
-		fc2 = layer_parameters(model.fc2).cpu().numpy()
-		fig, (ax,ax2) = plt.subplots(nrows=2)
-		ax.imshow([fc1], cmap='plasma', aspect='auto')
-		ax.set_yticks([])
-		ax.set_xticks(np.arange(len(fc1)))
-		ax.set_title('FC1')
-		ax2.imshow([fc2], cmap='plasma', aspect='auto')
-		ax2.set_yticks([])
-		ax2.set_xticks(np.arange(len(fc2)))
-		ax2.set_title('FC2')
-		plt.tight_layout()
-		plt.show()
+    with torch.no_grad():
+        fc1 = layer_parameters(model.fc1).cpu().numpy()
+        fc2 = layer_parameters(model.fc2).cpu().numpy()
+        fig, (ax,ax2) = plt.subplots(nrows=2)
+        sns.heatmap([fc1], ax=ax, cmap='plasma')
+        ax.set_yticks([])
+        ax.set_xticks(np.arange(len(fc1)))
+        ax.set_title('Layer 1')
+        sns.heatmap([fc2], ax=ax2, cmap='plasma')
+        ax2.set_yticks([])
+        ax2.set_xticks(np.arange(len(fc2)))
+        ax2.set_title('Layer 2')
+        ax2.set_xlabel('parameters')
+        plt.tight_layout()
+        plt.show()
 
 def prune(tensor, threshold):
 	tensor[torch.abs(tensor) < threshold] = 0
